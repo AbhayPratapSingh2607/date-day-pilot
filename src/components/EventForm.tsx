@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -122,7 +121,7 @@ export const EventForm: React.FC<EventFormProps> = ({
           />
         </div>
 
-        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+        <Button type="submit" className="w-full">
           {initialEvent ? 'Update Event' : 'Create Event'}
         </Button>
       </form>

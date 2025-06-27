@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Edit, Trash2, Calendar, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -42,19 +41,19 @@ export const EventList: React.FC<EventListProps> = ({
   const getCategoryColor = (category: Event['category']) => {
     switch (category) {
       case 'work':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-700';
       case 'personal':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700';
       case 'health':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+        return 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 border-purple-200 dark:border-purple-700';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-muted text-muted-foreground border-border';
     }
   };
 
   if (events.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500">
+      <div className="text-center py-12 text-muted-foreground">
         <Calendar className="h-16 w-16 mx-auto mb-4 opacity-50" />
         <h3 className="text-lg font-medium mb-2">No events yet</h3>
         <p>Create your first event to get started!</p>
@@ -64,23 +63,23 @@ export const EventList: React.FC<EventListProps> = ({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">All Events</h2>
+      <h2 className="text-xl font-semibold text-foreground mb-4">All Events</h2>
       
       {sortedEvents.map((event) => (
         <div
           key={event.id}
-          className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
+          className="p-4 bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <h3 className="font-semibold text-gray-800">{event.title}</h3>
+                <h3 className="font-semibold text-foreground">{event.title}</h3>
                 <span className={`px-2 py-1 text-xs rounded-full border ${getCategoryColor(event.category)}`}>
                   {event.category}
                 </span>
               </div>
               
-              <div className="flex items-center gap-1 text-sm text-gray-600 mb-1">
+              <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
                 <Calendar className="h-4 w-4" />
                 <span>{event.date.toLocaleDateString('en-US', { 
                   weekday: 'short', 
@@ -90,13 +89,13 @@ export const EventList: React.FC<EventListProps> = ({
                 })}</span>
               </div>
               
-              <div className="flex items-center gap-1 text-sm text-gray-600 mb-2">
+              <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
                 <Clock className="h-4 w-4" />
                 <span>{event.time}</span>
               </div>
               
               {event.description && (
-                <p className="text-sm text-gray-600 mt-2">{event.description}</p>
+                <p className="text-sm text-muted-foreground mt-2">{event.description}</p>
               )}
             </div>
             
@@ -105,7 +104,7 @@ export const EventList: React.FC<EventListProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => handleEditEvent(event)}
-                className="hover:bg-blue-50"
+                className="hover:bg-blue-50 dark:hover:bg-blue-900/20"
               >
                 <Edit className="h-4 w-4" />
               </Button>
@@ -113,7 +112,7 @@ export const EventList: React.FC<EventListProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => onEventDelete(event.id)}
-                className="hover:bg-red-50 hover:text-red-600"
+                className="hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>

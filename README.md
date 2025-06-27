@@ -4,6 +4,47 @@
 
 **URL**: https://lovable.dev/projects/b2463ad4-12d6-413c-be39-582d65a24e57
 
+## Dark Mode
+
+This application includes a comprehensive dark mode theme system built with `next-themes` and Tailwind CSS.
+
+### Features
+
+- **Theme Toggle**: Click the sun/moon icon in the top-right corner to switch between light and dark themes
+- **Persistent Storage**: Your theme preference is automatically saved to localStorage
+- **Accessibility**: Proper contrast ratios and focus states for both themes
+- **System Integration**: Uses CSS custom properties for seamless theme switching
+
+### How it Works
+
+The theme system uses:
+- `next-themes` for theme management and persistence
+- Tailwind's `dark:` prefix for theme-specific styles
+- CSS custom properties (design tokens) for consistent theming
+- Automatic class injection on the `<html>` element
+
+### Extending Color Tokens
+
+To add new theme-aware colors:
+
+1. **Update Tailwind Config**: Add custom colors to `tailwind.config.ts`
+2. **Use Design Tokens**: Reference existing tokens like `bg-background`, `text-foreground`, `border-border`
+3. **Add Dark Variants**: Use `dark:` prefix for dark mode specific styles
+
+Example:
+```css
+.my-component {
+  @apply bg-card text-foreground border-border;
+  @apply dark:bg-slate-800 dark:text-slate-100;
+}
+```
+
+### Accessibility Notes
+
+- All color combinations meet WCAG contrast requirements
+- Focus indicators work in both light and dark modes
+- Theme toggle includes proper ARIA labels and keyboard navigation
+
 ## How can I edit this code?
 
 There are several ways of editing your application.

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Calendar } from '@/components/Calendar';
 import { EventForm } from '@/components/EventForm';
@@ -69,23 +68,25 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-background dark:bg-slate-900 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-800 dark:to-slate-900">
+      <div className="container mx-auto px-4 py-8 pt-20">
         {/* Header */}
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            Schedule Tracker
-          </h1>
-          <p className="text-gray-600">
-            Stay organized and never miss an important event
-          </p>
+        <div className="mb-8">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-foreground mb-2">
+              Schedule Tracker
+            </h1>
+            <p className="text-muted-foreground">
+              Stay organized and never miss an important event
+            </p>
+          </div>
         </div>
 
         {/* Quick Actions */}
         <div className="flex justify-center mb-8">
           <Dialog open={isEventFormOpen} onOpenChange={setIsEventFormOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200">
+              <Button className="px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200">
                 <CalendarPlus className="mr-2 h-5 w-5" />
                 Add New Event
               </Button>
@@ -112,7 +113,7 @@ const Index = () => {
               </TabsList>
               
               <TabsContent value="calendar">
-                <div className="bg-white rounded-xl shadow-lg p-6">
+                <div className="bg-card rounded-xl shadow-lg p-6 border border-border">
                   <Calendar
                     events={events}
                     selectedDate={selectedDate}
@@ -123,7 +124,7 @@ const Index = () => {
               </TabsContent>
               
               <TabsContent value="list">
-                <div className="bg-white rounded-xl shadow-lg p-6">
+                <div className="bg-card rounded-xl shadow-lg p-6 border border-border">
                   <EventList
                     events={events}
                     onEventDelete={deleteEvent}
@@ -137,10 +138,10 @@ const Index = () => {
           {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
             {/* Today's Schedule */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-card rounded-xl shadow-lg p-6 border border-border">
               <div className="flex items-center gap-2 mb-4">
-                <Clock className="h-5 w-5 text-blue-600" />
-                <h2 className="text-xl font-semibold text-gray-800">
+                <Clock className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-semibold text-foreground">
                   Today's Schedule
                 </h2>
               </div>
@@ -149,8 +150,8 @@ const Index = () => {
 
             {/* Selected Date Events */}
             {selectedDate.toDateString() !== new Date().toDateString() && (
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              <div className="bg-card rounded-xl shadow-lg p-6 border border-border">
+                <h2 className="text-xl font-semibold text-foreground mb-4">
                   {selectedDate.toLocaleDateString('en-US', { 
                     weekday: 'long', 
                     month: 'long', 
