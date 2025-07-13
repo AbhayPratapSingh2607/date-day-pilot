@@ -1,13 +1,16 @@
 import React from 'react';
 import { Clock, MapPin } from 'lucide-react';
 import { Event } from '@/pages/Index';
+import { useSettings } from '@/contexts/SettingsContext';
+import { formatTime, parseTimeToMinutes } from '@/lib/timeUtils';
 
 interface TodayScheduleProps {
   events: Event[];
 }
 
 export const TodaySchedule: React.FC<TodayScheduleProps> = ({ events }) => {
-  const sortedEvents = events.sort((a, b) => a.time.localeCompare(b.time));
+  const { timeFormat } = useSettings();
+  const sortedEvents = events.sort((a, b) => parseTimeToMinutes(a.time) - parseTimeToMinutes(b.time));
 
   const getCategoryColor = (category: Event['category']) => {
     switch (category) {
@@ -44,7 +47,7 @@ export const TodaySchedule: React.FC<TodayScheduleProps> = ({ events }) => {
               <h3 className="font-medium text-sm">{event.title}</h3>
               <div className="flex items-center gap-1 mt-1 text-xs opacity-75">
                 <Clock className="h-3 w-3" />
-                <span>{event.time}</span>
+                <span>{formatTime(event.time, timeFormat)}</span>
               </div>
               {event.description && (
                 <p className="text-xs mt-2 opacity-75">{event.description}</p>

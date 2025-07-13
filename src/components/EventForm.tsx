@@ -6,9 +6,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Event } from '@/pages/Index';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface EventFormProps {
-  onSubmit: (event: Omit<Event, 'id'>) => void;
+  onSubmit: (event: Omit<Event, 'id'> | Event) => void;
   initialDate?: Date;
   initialEvent?: Event;
 }
@@ -18,33 +19,44 @@ export const EventForm: React.FC<EventFormProps> = ({
   initialDate = new Date(),
   initialEvent 
 }) => {
+  const { defaultEventCategory, timeFormat } = useSettings();
+  
+  // Helper function to get default time based on current time
+  const getDefaultTime = (): string => {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const nextHour = currentHour + 1;
+    return `${nextHour.toString().padStart(2, '0')}:00`;
+  };
+
   const [title, setTitle] = useState(initialEvent?.title || '');
   const [date, setDate] = useState(
     initialEvent?.date.toISOString().split('T')[0] || 
     initialDate.toISOString().split('T')[0]
   );
-  const [time, setTime] = useState(initialEvent?.time || '09:00');
+  const [time, setTime] = useState(initialEvent?.time || getDefaultTime());
   const [description, setDescription] = useState(initialEvent?.description || '');
-  const [category, setCategory] = useState<Event['category']>(initialEvent?.category || 'personal');
+  const [category, setCategory] = useState<Event['category']>(initialEvent?.category || defaultEventCategory);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
-
-    onSubmit({
+    const eventData = {
+      ...(initialEvent ? { id: initialEvent.id } : {}),
       title: title.trim(),
       date: new Date(date),
       time,
       description: description.trim(),
       category
-    });
+    };
+    onSubmit(eventData);
 
     // Reset form if not editing
     if (!initialEvent) {
       setTitle('');
       setDescription('');
-      setTime('09:00');
-      setCategory('personal');
+      setTime(getDefaultTime());
+      setCategory(defaultEventCategory);
     }
   };
 
@@ -82,7 +94,12 @@ export const EventForm: React.FC<EventFormProps> = ({
             />
           </div>
           <div>
-            <Label htmlFor="time">Time</Label>
+            <Label htmlFor="time">
+              Time
+              <span className="text-xs text-muted-foreground ml-1">
+                ({timeFormat === '24h' ? '24-hour format' : '12-hour format'})
+              </span>
+            </Label>
             <Input
               id="time"
               type="time"

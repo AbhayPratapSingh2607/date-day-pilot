@@ -3,10 +3,10 @@ import { Calendar } from '@/components/Calendar';
 import { EventForm } from '@/components/EventForm';
 import { TodaySchedule } from '@/components/TodaySchedule';
 import { EventList } from '@/components/EventList';
-import { CalendarPlus, Calendar as CalendarIcon, List, Clock } from 'lucide-react';
+import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CalendarPlus, Calendar as CalendarIcon, List, Clock } from 'lucide-react';
 
 export interface Event {
   id: string;
@@ -39,6 +39,8 @@ const Index = () => {
   
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isEventFormOpen, setIsEventFormOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const userLocale = typeof navigator !== 'undefined' ? navigator.language : 'en-US';
 
   const addEvent = (event: Omit<Event, 'id'>) => {
     const newEvent = {
@@ -59,6 +61,11 @@ const Index = () => {
     ));
   };
 
+  const handleEventFormSubmit = (updated: Event) => {
+    updateEvent(updated.id, updated);
+    setSelectedEvent(null);
+  };
+
   const todayEvents = events.filter(event => 
     event.date.toDateString() === new Date().toDateString()
   );
@@ -73,12 +80,8 @@ const Index = () => {
         {/* Header */}
         <div className="mb-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-foreground mb-2">
-              Schedule Tracker
-            </h1>
-            <p className="text-muted-foreground">
-              Stay organized and never miss an important event
-            </p>
+            <h1 className="text-4xl font-bold text-foreground mb-2">Schedule Tracker</h1>
+            <p className="text-muted-foreground">Stay organized and never miss an important event</p>
           </div>
         </div>
 
@@ -86,12 +89,16 @@ const Index = () => {
         <div className="flex justify-center mb-8">
           <Dialog open={isEventFormOpen} onOpenChange={setIsEventFormOpen}>
             <DialogTrigger asChild>
-              <Button className="px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200">
-                <CalendarPlus className="mr-2 h-5 w-5" />
+              <Button
+                variant="default"
+                size="lg"
+                aria-label="Add New Event"
+              >
+                <CalendarPlus className="mr-2 h-5 w-5" aria-hidden="true" />
                 Add New Event
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent forceMount>
               <EventForm onSubmit={addEvent} initialDate={selectedDate} />
             </DialogContent>
           </Dialog>
@@ -102,27 +109,25 @@ const Index = () => {
           <div className="lg:col-span-3">
             <Tabs defaultValue="calendar" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="calendar" className="flex items-center gap-2">
-                  <CalendarIcon className="h-4 w-4" />
+                <TabsTrigger value="calendar" className="flex items-center gap-2" aria-label="Calendar View">
+                  <CalendarIcon className="h-4 w-4" aria-hidden="true" />
                   Calendar View
                 </TabsTrigger>
-                <TabsTrigger value="list" className="flex items-center gap-2">
-                  <List className="h-4 w-4" />
+                <TabsTrigger value="list" className="flex items-center gap-2" aria-label="List View">
+                  <List className="h-4 w-4" aria-hidden="true" />
                   List View
                 </TabsTrigger>
               </TabsList>
-              
               <TabsContent value="calendar">
                 <div className="bg-card rounded-xl shadow-lg p-6 border border-border">
                   <Calendar
                     events={events}
                     selectedDate={selectedDate}
                     onDateSelect={setSelectedDate}
-                    onEventClick={(event) => console.log('Event clicked:', event)}
+                    onEventClick={setSelectedEvent}
                   />
                 </div>
               </TabsContent>
-              
               <TabsContent value="list">
                 <div className="bg-card rounded-xl shadow-lg p-6 border border-border">
                   <EventList
@@ -140,29 +145,38 @@ const Index = () => {
             {/* Today's Schedule */}
             <div className="bg-card rounded-xl shadow-lg p-6 border border-border">
               <div className="flex items-center gap-2 mb-4">
-                <Clock className="h-5 w-5 text-primary" />
-                <h2 className="text-xl font-semibold text-foreground">
-                  Today's Schedule
-                </h2>
+                <Clock className="h-5 w-5 text-primary" aria-hidden="true" />
+                <h2 className="text-xl font-semibold text-foreground">Today's Schedule</h2>
               </div>
               <TodaySchedule events={todayEvents} />
             </div>
-
             {/* Selected Date Events */}
             {selectedDate.toDateString() !== new Date().toDateString() && (
               <div className="bg-card rounded-xl shadow-lg p-6 border border-border">
-                <h2 className="text-xl font-semibold text-foreground mb-4">
-                  {selectedDate.toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    month: 'long', 
-                    day: 'numeric' 
+                <h3 className="text-xl font-semibold text-foreground mb-4">
+                  {selectedDate.toLocaleDateString(userLocale, {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
                   })}
-                </h2>
+                </h3>
                 <TodaySchedule events={selectedDateEvents} />
               </div>
             )}
           </div>
         </div>
+        {/* Event Edit Dialog */}
+        <Dialog open={!!selectedEvent} onOpenChange={open => !open && setSelectedEvent(null)}>
+          <DialogContent forceMount>
+            {selectedEvent && (
+              <EventForm
+                onSubmit={handleEventFormSubmit}
+                initialDate={selectedEvent.date}
+                initialEvent={selectedEvent}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

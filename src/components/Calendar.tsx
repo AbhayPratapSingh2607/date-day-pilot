@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Event } from '@/pages/Index';
+import { useSettings } from '@/contexts/SettingsContext';
+import { getWeekDays } from '@/lib/timeUtils';
 
 interface CalendarProps {
   events: Event[];
@@ -17,13 +19,20 @@ export const Calendar: React.FC<CalendarProps> = ({
   onEventClick
 }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const { weekStartDay, dateFormat } = useSettings();
 
   const getDaysInMonth = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   };
 
   const getFirstDayOfMonth = (date: Date) => {
-    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+    // Adjust for different week start days
+    // If week starts on Monday (1), we need to shift Sunday (0) to position 6
+    if (weekStartDay === 1) {
+      return firstDay === 0 ? 6 : firstDay - 1;
+    }
+    return firstDay;
   };
 
   const getEventsForDate = (date: Date) => {
@@ -114,7 +123,7 @@ export const Calendar: React.FC<CalendarProps> = ({
       {/* Calendar Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-foreground">
-          {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+          {currentMonth.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
         </h2>
         <div className="flex items-center gap-2">
           <Button
@@ -146,7 +155,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
       {/* Days of the week header */}
       <div className="grid grid-cols-7 gap-0 mb-2">
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+        {getWeekDays(weekStartDay).map((day) => (
           <div key={day} className="p-3 text-center font-semibold text-muted-foreground bg-muted">
             {day}
           </div>

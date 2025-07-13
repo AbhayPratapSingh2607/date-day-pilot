@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { EventForm } from './EventForm';
 import { Event } from '@/pages/Index';
+import { useSettings } from '@/contexts/SettingsContext';
+import { formatTime, formatDate, parseTimeToMinutes } from '@/lib/timeUtils';
 
 interface EventListProps {
   events: Event[];
@@ -18,11 +20,12 @@ export const EventList: React.FC<EventListProps> = ({
 }) => {
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const { timeFormat, dateFormat } = useSettings();
 
   const sortedEvents = events.sort((a, b) => {
     const dateComparison = a.date.getTime() - b.date.getTime();
     if (dateComparison !== 0) return dateComparison;
-    return a.time.localeCompare(b.time);
+    return parseTimeToMinutes(a.time) - parseTimeToMinutes(b.time);
   });
 
   const handleEditEvent = (event: Event) => {
@@ -81,17 +84,12 @@ export const EventList: React.FC<EventListProps> = ({
               
               <div className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
                 <Calendar className="h-4 w-4" />
-                <span>{event.date.toLocaleDateString('en-US', { 
-                  weekday: 'short', 
-                  month: 'short', 
-                  day: 'numeric', 
-                  year: 'numeric' 
-                })}</span>
+                <span>{formatDate(event.date, dateFormat)}</span>
               </div>
               
               <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
                 <Clock className="h-4 w-4" />
-                <span>{event.time}</span>
+                <span>{formatTime(event.time, timeFormat)}</span>
               </div>
               
               {event.description && (
